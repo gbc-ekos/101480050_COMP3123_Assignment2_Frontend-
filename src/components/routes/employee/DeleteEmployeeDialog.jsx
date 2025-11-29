@@ -8,7 +8,6 @@ import {
     DialogTitle,
     Button,
 } from "@mui/material";
-import {loginUser} from "../../../redux/slices/userSlice";
 
 export default function DeleteEmployeeDialog({
     open,
@@ -23,7 +22,7 @@ export default function DeleteEmployeeDialog({
     const handleDeleteConfirm = async (employeeId) => {
         const result = await dispatch(deleteEmployee({employeeId}));
         if (deleteEmployee.fulfilled.match(result)) {
-            onCancel()
+            onCancel(true)
         }
     }
 

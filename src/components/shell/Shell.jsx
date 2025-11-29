@@ -51,11 +51,11 @@ export default function Shell({children}) {
                     <Box sx={{overflow: 'auto', display: 'flex', flexDirection: 'column', height: '100%'}}>
                         <List>
                             <ListItem disablePadding>
-                                <ListItemButton component={RouterLink} to="/">
+                                <ListItemButton component={RouterLink} to="/employee">
                                     <ListItemIcon>
                                         <InboxIcon/>
                                     </ListItemIcon>
-                                    <ListItemText primary="Employees"/>
+                                    <ListItemText primary="Employee"/>
                                 </ListItemButton>
                             </ListItem>
                         </List>

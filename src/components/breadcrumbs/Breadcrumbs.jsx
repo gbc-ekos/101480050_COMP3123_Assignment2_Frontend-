@@ -7,9 +7,7 @@ export default function RouteBreadcrumbs() {
 
     // Map paths to readable labels
     const breadcrumbLabels = {
-        '': 'Employees',
-        'products': 'Products',
-        'car': 'Cars',
+        '': 'Home',
     };
 
     const getBreadcrumbLabel = (path) => {
@@ -20,7 +18,7 @@ export default function RouteBreadcrumbs() {
         <Breadcrumbs aria-label="breadcrumb">
             <RouterLink to="/" style={{textDecoration: 'none', color: 'inherit'}}>
                 <Link underline="hover" color="inherit">
-                    Employees
+                    Home
                 </Link>
             </RouterLink>
             {pathnames.map((name, index) => {

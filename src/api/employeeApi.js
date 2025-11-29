@@ -1,7 +1,9 @@
 import apiClient from './client';
 
 export const employeeApi = {
-    list: () => apiClient.get('/emp/employees'),
+    list: (query) => apiClient.get('/emp/employees', {
+        params: query ? { query } : {}
+    }),
 
     getById: (id) => apiClient.get(`/emp/employees/${id}`),
 
