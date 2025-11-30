@@ -1,10 +1,11 @@
 import {useDispatch, useSelector} from "react-redux";
-import {useEffect, useState} from "react";
+import {useEffect, useState, useRef} from "react";
 import {Fragment} from "react";
 import {useNavigate} from "react-router-dom";
 import {clearError, listEmployees} from "../../../redux/slices/employeeSlice";
 import {
     Alert,
+    Avatar,
     Box,
     Button,
     ButtonGroup,
@@ -30,11 +31,14 @@ export default function Employees() {
         employeeName: null,
     });
     const [searchQuery, setSearchQuery] = useState("");
+    const prevSearchQuery = useRef("");
 
-    // Fetch employees on component mount
+
     useEffect(() => {
-        dispatch(listEmployees());
-    }, [dispatch]);
+        if (employees.length === 0) {
+            dispatch(listEmployees());
+        }
+    }, [dispatch, employees.length]);
 
     const handleSearchChange = (e) => {
         const query = e.target.value;
@@ -43,11 +47,14 @@ export default function Employees() {
 
     // Trigger search when query changes with debouncing
     useEffect(() => {
-        const timer = setTimeout(() => {
-            dispatch(listEmployees(searchQuery || undefined));
-        }, 500);
+        if (searchQuery !== prevSearchQuery.current) {
+            const timer = setTimeout(() => {
+                dispatch(listEmployees(searchQuery || undefined));
+            }, 500);
 
-        return () => clearTimeout(timer);
+            prevSearchQuery.current = searchQuery;
+            return () => clearTimeout(timer);
+        }
     }, [searchQuery, dispatch]);
 
     const handleRetry = () => {
@@ -103,6 +110,7 @@ export default function Employees() {
                     <Table sx={{minWidth: 650}} aria-label="employees table">
                         <TableHead>
                             <TableRow sx={{backgroundColor: '#f5f5f5'}}>
+                                <TableCell><strong>Picture</strong></TableCell>
                                 <TableCell><strong>ID</strong></TableCell>
                                 <TableCell><strong>Email</strong></TableCell>
                                 <TableCell><strong>Department</strong></TableCell>
@@ -112,13 +120,19 @@ export default function Employees() {
                         <TableBody>
                             {loading ? (
                                 <TableRow>
-                                    <TableCell colSpan={4} align="center" sx={{py: 4}}>
+                                    <TableCell colSpan={5} align="center" sx={{py: 4}}>
                                         <CircularProgress />
                                     </TableCell>
                                 </TableRow>
                             ) : employees && employees.length > 0 ? (
                                 employees.map((employee) => (
                                     <TableRow key={employee.employee_id} hover>
+                                        <TableCell align="center">
+                                            <Avatar
+                                                src={employee.picture || undefined}
+                                                sx={{width: 40, height: 40, margin: '0 auto'}}
+                                            />
+                                        </TableCell>
                                         <TableCell>{employee.employee_id}</TableCell>
                                         <TableCell>{employee.email || '-'}</TableCell>
                                         <TableCell>{employee.department || '-'}</TableCell>
@@ -141,7 +155,7 @@ export default function Employees() {
                                 ))
                             ) : (
                                 <TableRow>
-                                    <TableCell colSpan={4} align="center">
+                                    <TableCell colSpan={5} align="center">
                                         No employees found
                                     </TableCell>
                                 </TableRow>

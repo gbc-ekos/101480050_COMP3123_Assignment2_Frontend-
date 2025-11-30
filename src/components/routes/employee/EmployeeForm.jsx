@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {useNavigate, useParams} from "react-router-dom";
-import {Alert, Box, Button, CircularProgress, Container, Stack, TextField, Typography,} from "@mui/material";
+import {Alert, Avatar, Box, Button, CircularProgress, Container, Stack, TextField, Typography,} from "@mui/material";
 import {clearError, createEmployee, getEmployeeById, updateEmployee} from "../../../redux/slices/employeeSlice";
 import DeleteEmployeeDialog from "./DeleteEmployeeDialog";
 
@@ -22,6 +22,7 @@ export default function EmployeeForm() {
         salary: "",
         date_of_joining: "",
         department: "",
+        picture: null,
     });
 
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -48,6 +49,7 @@ export default function EmployeeForm() {
                 salary: selectedEmployee.salary || "",
                 date_of_joining: selectedEmployee.date_of_joining ? selectedEmployee.date_of_joining.split('T')[0] : "",
                 department: selectedEmployee.department || "",
+                picture: selectedEmployee.picture || null,
             });
         }
     }, [isEditMode, selectedEmployee]);
@@ -58,6 +60,20 @@ export default function EmployeeForm() {
             ...prev,
             [name]: value,
         }));
+    };
+
+    const handleFileChange = (e) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setFormData((prev) => ({
+                    ...prev,
+                    picture: reader.result,  // base64 string
+                }));
+            };
+            reader.readAsDataURL(file);
+        }
     };
 
     const handleSubmit = async (e) => {
@@ -218,6 +234,48 @@ export default function EmployeeForm() {
                             error={!!fieldErrors.department}
                             helperText={fieldErrors.department}
                         />
+
+                        <Box sx={{mt: 2}}>
+                            <Typography variant="subtitle2" sx={{mb: 1}}>
+                                Picture
+                            </Typography>
+                            {formData.picture && (
+                                <Box sx={{mb: 2, display: 'flex', justifyContent: 'center'}}>
+                                    <Avatar
+                                        src={formData.picture}
+                                        sx={{width: 100, height: 100}}
+                                    />
+                                </Box>
+                            )}
+                            <Box sx={{position: 'relative'}}>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleFileChange}
+                                    disabled={loading}
+                                    style={{
+                                        display: 'block',
+                                        padding: '8px',
+                                        border: '1px solid #ccc',
+                                        borderRadius: '4px',
+                                        width: '100%',
+                                        boxSizing: 'border-box',
+                                        cursor: loading ? 'not-allowed' : 'pointer',
+                                        opacity: loading ? 0.6 : 1,
+                                    }}
+                                />
+                            </Box>
+                            {formData.picture && (
+                                <Typography variant="caption" color="textSecondary" sx={{mt: 1, display: 'block'}}>
+                                    Select a new image to replace current picture
+                                </Typography>
+                            )}
+                            {fieldErrors.picture && (
+                                <Typography variant="caption" color="error" sx={{mt: 1, display: 'block'}}>
+                                    {fieldErrors.picture}
+                                </Typography>
+                            )}
+                        </Box>
 
                         <Box display="flex" gap={1} sx={{mt: 1}}>
                             <Button
